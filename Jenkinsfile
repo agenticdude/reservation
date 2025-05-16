@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         REMOTE_USER = 'ubuntu'
-        REMOTE_HOST = 'ubuntu@ec2-65-0-87-9.ap-south-1.compute.amazonaws.com'
-        REMOTE_DIR  = '/home/ubuntu/resturant/'
+        REMOTE_HOST = 'ec2-65-0-87-9.ap-south-1.compute.amazonaws.com'
+        REMOTE_DIR  = '/home/ubuntu/restaurant'
         SSH_KEY_ID  = 'f310edbf-34ad-4cfd-8380-ae5703801800'
         GIT_REPO    = 'https://github.com/agenticdude/reservation.git'
         BRANCH      = 'main'
@@ -51,6 +51,3 @@ pipeline {
         }
     }
 }
-
-
-
