@@ -1,20 +1,56 @@
 pipeline {
     agent any
 
+    environment {
+        REMOTE_USER = 'ubuntu'
+        REMOTE_HOST = 'ubuntu@ec2-65-0-87-9.ap-south-1.compute.amazonaws.com'
+        REMOTE_DIR  = '/home/ubuntu/resturant/'
+        SSH_KEY_ID  = 'f310edbf-34ad-4cfd-8380-ae5703801800'
+        GIT_REPO    = 'https://github.com/agenticdude/reservation.git'
+        BRANCH      = 'main'
+    }
+
     stages {
-        stage('Checkout Code') {
+        stage('Pull latest code') {
             steps {
-                git credentialsId: 'github-credentials', url: 'https://github.com/mr3668323/MERN_STACK_RESTAURANT_RESERVATION.git'
+                git credentialsId: '21e6d9ba-dbc2-4afe-8516-c7158eec8818', url: "${env.GIT_REPO}", branch: "${env.BRANCH}"
             }
         }
-        stage('Build') {
+
+        stage('Upload to EC2') {
             steps {
-                echo 'Simulating build process...'
-                // In a real build phase for a MERN app, you might run:
-                // - npm install (for backend and frontend)
-                // - npm run build (for frontend)
-                // - any backend build steps
+                sshagent (credentials: ["${env.SSH_KEY_ID}"]) {
+                    sh """
+                    rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./ ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/
+                    """
+                }
+            }
+        }
+
+        stage('Run Docker Compose on EC2') {
+            steps {
+                sshagent (credentials: ["${env.SSH_KEY_ID}"]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
+                      cd ${REMOTE_DIR} &&
+                      docker compose down &&
+                      docker compose up -d --build
+                    '
+                    """
+                }
             }
         }
     }
+
+    post {
+        success {
+            echo '✅ App deployed successfully on EC2.'
+        }
+        failure {
+            echo '❌ Deployment failed.'
+        }
+    }
 }
+
+
+
