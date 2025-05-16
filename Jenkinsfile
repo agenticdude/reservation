@@ -5,7 +5,7 @@ pipeline {
         REMOTE_USER = 'ubuntu'
         REMOTE_HOST = 'ec2-65-0-87-9.ap-south-1.compute.amazonaws.com'
         REMOTE_DIR  = '/home/ubuntu/restaurant'
-        SSH_KEY_ID  = 'f310edbf-34ad-4cfd-8380-ae5703801800'
+        SSH_KEY_ID  = 'aa659106-c364-420f-b384-ada26b35eb52'
         GIT_REPO    = 'https://github.com/agenticdude/reservation.git'
         BRANCH      = 'main'
     }
